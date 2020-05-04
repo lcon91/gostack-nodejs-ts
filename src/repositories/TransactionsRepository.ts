@@ -8,21 +8,39 @@ interface Balance {
 
 class TransactionsRepository {
   private transactions: Transaction[];
+  private balance: Balance;
 
   constructor() {
     this.transactions = [];
+    this.balance = {
+      income: 0,
+      outcome: 0,
+      total: 0
+    }
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    return this.balance;
   }
 
-  public create(): Transaction {
-    // TODO
+  public create(title: string, value: number, type:'income' | 'outcome'): Transaction {
+    const transaction = new Transaction({title, value, type});
+    if(transaction.type == 'income'){
+      this.balance.income += transaction.value;
+      this.balance.total += transaction.value;
+    }else{
+      if(transaction.value > this.balance.total){
+        throw Error('Você não possui valor em caixa pra cadastrar essa transação');
+      }
+      this.balance.outcome += transaction.value;
+      this.balance.total -= transaction.value;
+    }
+    this.transactions.push(transaction);
+    return transaction;
   }
 }
 
